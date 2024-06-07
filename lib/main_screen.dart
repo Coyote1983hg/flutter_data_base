@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
 
-class ListScreen extends StatefulWidget {
+import 'package:flutter_data_base/src/data/database_repository.dart';
+
+
+
+class MainScreen extends StatefulWidget {
+  final DatabaseRepository db;
+  const MainScreen({super.key, required this.db});
+
   @override
-  _ListScreenState createState() => _ListScreenState();
+  State<MainScreen> createState() => _MainScreenState();
 }
 
-class _ListScreenState extends State<ListScreen> {
+class _MainScreenState extends State<MainScreen> {
+  String? firstName;
   final TextEditingController _textController = TextEditingController();
   final List<String> _entries = [];
   bool _isLoading = false;
@@ -18,16 +26,13 @@ class _ListScreenState extends State<ListScreen> {
 
   Future<void> _loadEntries() async {
     setState(() {
-      _isLoading = true; // Setează _isLoading la true înainte de a încărca datele
+      _isLoading = true;
     });
 
-    // Simuliere einer Verzögerung von 2 Sekunden
-    await Future.delayed(Duration(seconds: 2));
-    // Hier würdest du die Einträge aus einer Datenquelle laden
-    // Für dieses Beispiel verwenden wir eine leere Liste
+    await Future.delayed(const Duration(seconds: 2));
 
     setState(() {
-      _isLoading = false; // Setează _isLoading la false după ce datele au fost încărcate
+      _isLoading = false;
     });
   }
 
@@ -49,34 +54,56 @@ class _ListScreenState extends State<ListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
       appBar: AppBar(
-        title: Text('List with Textfeld'),
+        title: const Text('List with Textfield'),
       ),
       body: Column(
         children: [
           Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             child: TextField(
               controller: _textController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: 'Enter a text',
               ),
             ),
           ),
           ElevatedButton(
             onPressed: _addEntry,
-            child: Text('Add'),
+            onLongPress: () async {
+              firstName = await widget.db.getNameFromStorage();
+              setState(() {});
+            },
+            child: const Text('Add'),
+          ),
+           OutlinedButton(
+             onPressed: () async {
+              firstName = await widget.db.getNameFromStorage();
+              setState(() {});
+            },
+            child: const Text("Lies Vorname aus Speicher"),
+          ),
+          OutlinedButton(
+            onPressed: () async {
+              await widget.db.storeName("Giorgio");
+            },
+            child: const Text("Speicher Vorname"),
+          ),
+          Text(
+            "Der Name ist: $firstName",
+            style: Theme.of(context).textTheme.displayMedium,
           ),
           Expanded(
             child: _isLoading
-                ? Center(child: CircularProgressIndicator())
+                ? const Center(child: CircularProgressIndicator())
                 : ListView.builder(
                     itemCount: _entries.length,
                     itemBuilder: (context, index) {
                       return ListTile(
                         title: Text(_entries[index]),
                         trailing: IconButton(
-                          icon: Icon(Icons.delete),
+                          icon: const Icon(Icons.delete),
                           onPressed: () => _removeEntry(index),
                         ),
                       );
