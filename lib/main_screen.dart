@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-
 import 'package:flutter_data_base/src/data/database_repository.dart';
-
-
 
 class MainScreen extends StatefulWidget {
   final DatabaseRepository db;
@@ -54,7 +51,6 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       appBar: AppBar(
         title: const Text('List with Textfield'),
       ),
@@ -71,24 +67,21 @@ class _MainScreenState extends State<MainScreen> {
           ),
           ElevatedButton(
             onPressed: _addEntry,
-            onLongPress: () async {
-              firstName = await widget.db.getNameFromStorage();
-              setState(() {});
-            },
             child: const Text('Add'),
           ),
-           OutlinedButton(
-             onPressed: () async {
+          OutlinedButton(
+            onPressed: () async {
+              await widget.db.storeName(_textController.text);
+              _textController.clear();
+            },
+            child: const Text("Speicher Vorname"),
+          ),
+          OutlinedButton(
+            onPressed: () async {
               firstName = await widget.db.getNameFromStorage();
               setState(() {});
             },
             child: const Text("Lies Vorname aus Speicher"),
-          ),
-          OutlinedButton(
-            onPressed: () async {
-              await widget.db.storeName("Giorgio");
-            },
-            child: const Text("Speicher Vorname"),
           ),
           Text(
             "Der Name ist: $firstName",
